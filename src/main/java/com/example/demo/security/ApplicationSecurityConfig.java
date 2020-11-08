@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static com.example.demo.security.ApplicationUserRole.*;
+
 @Configuration
 @EnableWebSecurity
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -31,10 +33,10 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests() // Authorize requests
                 .antMatchers("/", "index", "/css/*", "/js/*").permitAll() // Whitelist all pages that match the previous antMatchers
-                .antMatchers("/api/**").hasRole(ApplicationUserRole.STUDENT.name()) // Requires a STUDENT role to access /api path
-                .antMatchers(HttpMethod.DELETE, "/management/api/**").hasAuthority(ApplicationUserPermission.COURSE_WRITE.name()) // Based on permission
-                .antMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(ApplicationUserPermission.COURSE_WRITE.name()) // Based on permission
-                .antMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(ApplicationUserPermission.COURSE_WRITE.name()) // Based on permission
+                .antMatchers("/api/**").hasRole(STUDENT.name()) // Requires a STUDENT role to access /api path
+                .antMatchers(HttpMethod.DELETE, "/management/api/**").hasAuthority(ApplicationUserPermission.COURSE_WRITE.getPermission()) // Based on permission
+                .antMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(ApplicationUserPermission.COURSE_WRITE.getPermission()) // Based on permission
+                .antMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(ApplicationUserPermission.COURSE_WRITE.getPermission()) // Based on permission
                 .antMatchers(HttpMethod.GET, "/management/api/**").hasAnyRole(ApplicationUserRole.ADMIN.name(), ApplicationUserRole.ADMINTRAINEE.name()) // Based on role
                 .anyRequest()
                 .authenticated() // Any request must be authenticated with username and password
@@ -49,19 +51,22 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         UserDetails annaSmithUser = User.builder()
                 .username("annasmith")
                 .password(passwordEncoder.encode("password"))
-                .roles(ApplicationUserRole.STUDENT.name()) // Defined in Spring as ROLE_STUDENT
+//                .roles(ApplicationUserRole.STUDENT.name()) // Defined in Spring as ROLE_STUDENT
+                .authorities(STUDENT.getGrantedAuthorities())
                 .build();
 
         UserDetails lindaUser = User.builder()
                 .username("linda")
                 .password(passwordEncoder.encode("password123"))
-                .roles(ApplicationUserRole.ADMIN.name()) // ROLE_ADMIN
+//                .roles(ApplicationUserRole.ADMIN.name()) // ROLE_ADMIN
+                .authorities(ADMIN.getGrantedAuthorities())
                 .build();
 
         UserDetails tomUser = User.builder()
                 .username("tom")
                 .password(passwordEncoder.encode("password123"))
-                .roles(ApplicationUserRole.ADMINTRAINEE.name()) // ROLE_ADMINTRAINEE
+//                .roles(ApplicationUserRole.ADMINTRAINEE.name()) // ROLE_ADMINTRAINEE
+                .authorities(ADMINTRAINEE.getGrantedAuthorities())
                 .build();
 
         // Users stored in memory
