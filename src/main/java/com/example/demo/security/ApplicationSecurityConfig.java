@@ -27,11 +27,11 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     // Configures which URLs need to be authenticated or not
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests() // Authorize requests
-                .antMatchers("/", "index", "/css/*", "/js/*")
-                .permitAll() // Whitelist all pages that match the previous antMatchers
-                .antMatchers("/api/**")
-                .hasRole(ApplicationUserRole.STUDENT.name()) // Requires a STUDENT role to access /api path
+                .antMatchers("/", "index", "/css/*", "/js/*").permitAll() // Whitelist all pages that match the previous antMatchers
+                .antMatchers("/api/**").hasRole(ApplicationUserRole.STUDENT.name()) // Requires a STUDENT role to access /api path
+//                .antMatchers("/management/api/**").permitAll()
                 .anyRequest()
                 .authenticated() // Any request must be authenticated with username and password
                 .and()
@@ -54,10 +54,17 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .roles(ApplicationUserRole.ADMIN.name()) // ROLE_ADMIN
                 .build();
 
+        UserDetails tomUser = User.builder()
+                .username("tom")
+                .password(passwordEncoder.encode("password123"))
+                .roles(ApplicationUserRole.ADMINTRAINEE.name()) // ROLE_ADMINTRAINEE
+                .build();
+
         // Users stored in memory
         return new InMemoryUserDetailsManager(
                 annaSmithUser,
-                lindaUser
+                lindaUser,
+                tomUser
         );
     }
 }
