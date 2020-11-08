@@ -30,6 +30,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests() // Authorize requests
                 .antMatchers("/", "index", "/css/*", "/js/*")
                 .permitAll() // Whitelist all pages that match the previous antMatchers
+                .antMatchers("/api/**")
+                .hasRole(ApplicationUserRole.STUDENT.name()) // Requires a STUDENT role to access /api path
                 .anyRequest()
                 .authenticated() // Any request must be authenticated with username and password
                 .and()
